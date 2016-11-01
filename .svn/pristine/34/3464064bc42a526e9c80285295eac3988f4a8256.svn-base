@@ -1,0 +1,563 @@
+package br.com.speedy.ipapp.fragment;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.google.android.gms.internal.gr;
+
+import java.math.BigDecimal;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import br.com.speedy.ipapp.R;
+import br.com.speedy.ipapp.adapter.LoteAdapter;
+import br.com.speedy.ipapp.adapter.ResumoAdapter;
+import br.com.speedy.ipapp.model.Lote;
+import br.com.speedy.ipapp.model.Peixe;
+import br.com.speedy.ipapp.util.ItemResumo;
+import br.com.speedy.ipapp.util.SessionApp;
+
+public class ResumoFragment extends Fragment implements Runnable {
+
+    public static final int ATUALIZAR_LISTA = 1;
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    private List<Lote> lotes;
+
+    private List<ItemResumo> itensResumo;
+
+    private ExpandableListView eListView;
+
+    private Lote lote;
+
+    private View lotesStatus;
+
+    private View lotesLista;
+
+    private ResumoAdapter adapter;
+
+    private Thread threadLotes;
+
+    private TextView txtcodigoCompra;
+
+    private TextView txtFornecedor;
+
+    private TextView txtBarco;
+
+    private TextView txtTotalPesoLiquido;
+
+    private TextView txtTotalPesoBruto;
+
+    private TextView txtTotalCaixas;
+
+    private TextView txtTotalDescontos;
+
+    private View view;
+
+    private BigDecimal descontokg;
+
+    private EditText editTextDesconto;
+
+    // TODO: Rename and change types of parameters
+    public static ResumoFragment newInstance(int position) {
+        ResumoFragment fragment = new ResumoFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, position);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public ResumoFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_resumo_list, container, false);
+
+        eListView = (ExpandableListView) view.findViewById(R.id.eList);
+
+        eListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                ItemResumo i = itensResumo.get(groupPosition);
+                showDialogRemoverPeixe(i);
+                return true;
+            }
+        });
+
+        eListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                Lote lote = itensResumo.get(groupPosition).getLotes().get(childPosition);
+                showDialogOpcoesLote(lote, groupPosition + 1,childPosition + 1);
+                return true;
+            }
+        });
+
+        lotesLista = view.findViewById(R.id.lotes_lista);
+
+        lotesStatus = view.findViewById(R.id.lotes_status);
+
+        txtcodigoCompra = (TextView) view.findViewById(R.id.txtCodigoCompra);
+
+        txtFornecedor = (TextView) view.findViewById(R.id.txtFornecedor);
+
+        txtBarco = (TextView) view.findViewById(R.id.txtBarco);
+
+        txtTotalPesoLiquido = (TextView) view.findViewById(R.id.txtTotalPesoLiquido);
+
+        txtTotalPesoBruto = (TextView) view.findViewById(R.id.txtTotalPesoBruto);
+
+        txtTotalCaixas = (TextView) view.findViewById(R.id.txtTotalCaixas);
+
+        txtTotalDescontos = (TextView) view.findViewById(R.id.txtTotalDescontos);
+
+        //showProgress(true);
+
+        //runThread();
+
+        return view;
+    }
+
+    public void runThread(){
+        threadLotes = new Thread(this);
+        threadLotes.start();
+    }
+
+
+    public void getLotes(){
+
+        //callServer("get-json", "");
+
+        lotes = SessionApp.getLotes() != null ? SessionApp.getLotes() : new ArrayList<Lote>();
+
+        itensResumo = new ArrayList<ItemResumo>();
+
+        List<Lote> listAux = new ArrayList<Lote>();
+        listAux.addAll(lotes);
+
+        for (Lote lote : lotes){
+
+            ItemResumo item = new ItemResumo();
+            item.setPeixe(lote.getPeixe());
+            item.setLotes(new ArrayList<Lote>());
+
+            for (Lote l : lotes){
+                if (l.getPeixe().getId().longValue() == item.getPeixe().getId().longValue())
+                    item.getLotes().add(l);
+            }
+
+            boolean add = false;
+            for (ItemResumo i : itensResumo) {
+                if (i.getPeixe().getId().longValue() == item.getPeixe().getId().longValue())
+                    add = true;
+            }
+
+            if (!add)
+                itensResumo.add(item);
+        }
+
+        if (itensResumo.size() > 0)
+            Collections.sort(itensResumo, new SortByPeixe());
+
+        Message msg = new Message();
+        msg.what = ATUALIZAR_LISTA;
+        handler.sendMessage(msg);
+    }
+
+    public class SortByPeixe implements Comparator<ItemResumo>{
+
+        @Override
+        public int compare(ItemResumo p1, ItemResumo p2) {
+            return p1.getPeixe().getDescricao().compareToIgnoreCase(p2.getPeixe().getDescricao());
+        }
+    }
+
+    public void getItensResumo(){
+        itensResumo = new ArrayList<ItemResumo>();
+
+        ItemResumo i = new ItemResumo();
+        Peixe p = new Peixe();
+        p.setDescricao("Tambaqui 2");
+        i.setPeixe(p);
+
+        i.setLotes(new ArrayList<Lote>());
+        Lote l = new Lote();
+        l.setPesoLiquido(new BigDecimal(100));
+        l.setPeso(new BigDecimal(200));
+        l.setQtdCaixas(10);
+
+        i.getLotes().add(l);
+
+        itensResumo.add(i);
+
+        Message msg = new Message();
+        msg.what = ATUALIZAR_LISTA;
+        handler.sendMessage(msg);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        runThread();
+
+    }
+
+    @Override
+    public void run() {
+
+        getLotes();
+    }
+
+    private void showProgress(final boolean show) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(
+                    android.R.integer.config_shortAnimTime);
+
+            lotesStatus.setVisibility(View.VISIBLE);
+            lotesStatus.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 1 : 0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            lotesStatus.setVisibility(show ? View.VISIBLE
+                                    : View.GONE);
+                        }
+                    });
+
+            lotesLista.setVisibility(View.VISIBLE);
+            lotesLista.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 0 : 1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            lotesLista.setVisibility(show ? View.GONE
+                                    : View.VISIBLE);
+                        }
+                    });
+        } else {
+            lotesStatus.setVisibility(show ? View.VISIBLE : View.GONE);
+            lotesLista.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private Handler handler = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+
+                case ATUALIZAR_LISTA:
+
+                    txtcodigoCompra.setText(SessionApp.getCompra() != null ? SessionApp.getCompra().getCodigo() : "");
+
+                    txtFornecedor.setText(SessionApp.getFornecedor() != null ? SessionApp.getFornecedor().getNome() : "");
+
+                    txtBarco.setText(SessionApp.getBarco() != null ? SessionApp.getBarco().getNome() : "");
+
+                    txtTotalCaixas.setText(SessionApp.getTotalCaixas().toString());
+
+                    txtTotalPesoBruto.setText(SessionApp.getTotalPesoBruto().toString() + "kg");
+
+                    txtTotalPesoLiquido.setText(SessionApp.getTotalPesoLiquido().toString() + "kg");
+
+                    txtTotalDescontos.setText(SessionApp.getTotalDescontos().toString() + "kg");
+
+                    if (itensResumo != null) {
+
+                        adapter = new ResumoAdapter(getActivity(), itensResumo);
+
+                        setListAdapter(adapter);
+
+                        for (int i = 0; i < adapter.getGroupCount(); i++) {
+                            eListView.expandGroup(i);
+                        }
+                    }
+
+                    /*if (isAdded())
+                        showProgress(false);*/
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    public void setListAdapter (ExpandableListAdapter adapter) {
+
+        eListView.setAdapter(adapter);
+    }
+
+    public void showDialogOpcoesLote(final Lote lote, final int groupPosition, final int itemPosition){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Opções");
+
+        if (lote.getDescontokg() != null && lote.getDescontokg().compareTo(BigDecimal.ZERO) == 1){
+            String[] itens = {"Cancelar desconto", "Remover item"};
+
+            builder.setItems(itens, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            showDialogCancelarDesconto(lote, groupPosition, itemPosition);
+                            break;
+                        case 1:
+                            showDialogRemoverItemPeixe(lote, itemPosition);
+                            break;
+                    }
+                }
+            });
+        }else {
+            String[] itens = {"Desconto", "Remover item"};
+
+            builder.setItems(itens, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            showDialogAplicarDesconto(lote);
+                            break;
+                        case 1:
+                            showDialogRemoverItemPeixe(lote, itemPosition);
+                            break;
+                    }
+                }
+            });
+        }
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showDialogAplicarDesconto(final Lote lote){
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        View view = inflater.inflate(R.layout.sample_dialog_desconto_lote, null);
+
+        editTextDesconto = (EditText) view.findViewById(R.id.desconto);
+
+        builder.setView(view)
+                // Add action buttons
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        String desconto = editTextDesconto.getText().toString();
+
+                        descontokg = new BigDecimal(desconto);
+
+                        aplicarDesconto(lote);
+
+                    }
+                })
+                .setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        builder.setTitle("Inserir desconto");
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showDialogCancelarDesconto(final Lote lote, int groupPosition, int childPosition){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Deseja cancelar o desconto do item " + groupPosition  + "." + childPosition + "?");
+
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                cancelarDesconto(lote);
+            }
+        });
+
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showDialogRemoverPeixe(final ItemResumo itemResumo){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Deseja remover o " +  itemResumo.getPeixe().getDescricao()+ " da compra?");
+
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                removerPeixe(itemResumo);
+            }
+        });
+
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showDialogRemoverItemPeixe(final Lote lote, int itemPosition){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Deseja remover o item " + itemPosition + " do " + lote.getPeixe().getDescricao() + "?");
+
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                removerItemPeixe(lote);
+            }
+        });
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showDialogSucesso(String msg){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Sucesso");
+
+        builder.setMessage(msg);
+
+        builder.setPositiveButton("Fechar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void removerPeixe(ItemResumo i){
+
+        List<Lote> lotes = new ArrayList<Lote>();
+        lotes.addAll(SessionApp.getLotes());
+
+        for (Lote l : lotes){
+            if (i.getPeixe().getId().longValue() == l.getPeixe().getId().longValue())
+                SessionApp.getLotes().remove(l);
+        }
+
+        lotes = null;
+        i = null;
+
+        runThread();
+    }
+
+    public void removerItemPeixe(Lote lote){
+
+        List<Lote> lotes = new ArrayList<Lote>();
+        lotes.addAll(SessionApp.getLotes());
+
+        for (Lote l : lotes){
+            if (l.equals(lote))
+                SessionApp.getLotes().remove(l);
+        }
+
+        lotes = null;
+        lote = null;
+
+        runThread();
+    }
+
+    public void aplicarDesconto(Lote lote){
+
+        List<Lote> lotes = new ArrayList<Lote>();
+        lotes.addAll(SessionApp.getLotes());
+
+        for (Lote l : lotes){
+            if (l.equals(lote)) {
+                l.setDescontokg(descontokg);
+                l.getPesoLiquido().subtract(descontokg);
+                break;
+            }
+        }
+
+        lotes = null;
+        lote = null;
+
+        showDialogSucesso("Desconto efetuado com sucesso.");
+
+        runThread();
+    }
+
+    public void cancelarDesconto(Lote lote){
+
+        List<Lote> lotes = new ArrayList<Lote>();
+        lotes.addAll(SessionApp.getLotes());
+
+        for (Lote l : lotes){
+            if (l.equals(lote)) {
+                l.getPesoLiquido().add(l.getDescontokg());
+                l.setDescontokg(BigDecimal.ZERO);
+                break;
+            }
+        }
+
+        lotes = null;
+        lote = null;
+
+        showDialogSucesso("Desconto cancelado com sucesso.");
+
+        runThread();
+    }
+}

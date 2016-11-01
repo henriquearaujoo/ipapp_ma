@@ -1,0 +1,481 @@
+package br.com.speedy.appapp_ma;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.speedy.appapp_ma.adapter.SpinnerCamaraAdapter;
+import br.com.speedy.appapp_ma.adapter.SpinnerEmbalagemAdapter;
+import br.com.speedy.appapp_ma.adapter.SpinnerPosicoesAdapter;
+import br.com.speedy.appapp_ma.adapter.SpinnerTamanhoAdapter;
+import br.com.speedy.appapp_ma.adapter.SpinnerTipoPeixeAdapter;
+import br.com.speedy.appapp_ma.model.Camara;
+import br.com.speedy.appapp_ma.model.Embalagem;
+import br.com.speedy.appapp_ma.model.PosicaoCamara;
+import br.com.speedy.appapp_ma.model.TamanhoPeixe;
+import br.com.speedy.appapp_ma.model.TipoPeixe;
+import br.com.speedy.appapp_ma.util.ArmazenamentoRetiradaAux;
+import br.com.speedy.appapp_ma.util.HttpConnection;
+import br.com.speedy.appapp_ma.util.ItemResumo;
+import br.com.speedy.appapp_ma.util.SessionApp;
+import br.com.speedy.appapp_ma.util.SharedPreferencesUtil;
+
+
+public class DadosArmazenamentoActivity extends ActionBarActivity implements Runnable {
+
+    public static final int ATUALIZAR_DADOS = 1;
+    public static final int ATUALIZAR_POSICOES = 2;
+
+    private List<Camara> camaras;
+    private List<Embalagem> embalagems;
+    private List<TipoPeixe> tipoPeixes;
+    private List<TamanhoPeixe> tamanhoPeixes;
+    private List<PosicaoCamara> posicaoCamaras;
+
+    private Spinner spnTipoPeixe;
+    private Spinner spnTamanho;
+    private Spinner spnEmbalagem;
+    private Spinner spnCamara;
+    private Spinner spnPosicao;
+    private EditText edtQtdeEmbalagem;
+    private EditText edtPeso;
+    private EditText edtObservacoes;
+    private EditText edtPesoEmbalagem;
+    private TextView txtPeixe;
+
+    private View dadosStatus;
+
+    private View scrollDados;
+
+    private View llPesoEmbalagem;
+
+    private Thread threadDados;
+
+    private ProgressDialog progressDialog;
+
+    private Camara camara;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_dados_armazenamento);
+
+        dadosStatus = findViewById(R.id.dados_status);
+
+        scrollDados = findViewById(R.id.scrollDadosArmazenamento);
+
+        llPesoEmbalagem = findViewById(R.id.llDAPesoEmbalagem);
+
+        spnTipoPeixe = (Spinner) findViewById(R.id.spnDATipoPeixe);
+        spnTamanho = (Spinner) findViewById(R.id.spnDATamanho);
+        spnEmbalagem = (Spinner) findViewById(R.id.spnDAEmbalagem);
+        spnCamara = (Spinner) findViewById(R.id.spnDACamara);
+        spnPosicao = (Spinner) findViewById(R.id.spnDAPosicao);
+        edtQtdeEmbalagem = (EditText) findViewById(R.id.edtDAQtdeEmbalagem);
+        edtPeso = (EditText) findViewById(R.id.edtDAPeso);
+        edtObservacoes = (EditText) findViewById(R.id.edtDAObservacoes);
+        edtPesoEmbalagem = (EditText) findViewById(R.id.edtDAPesoEmbalagem);
+        txtPeixe = (TextView) findViewById(R.id.txtDAPeixe);
+
+        txtPeixe.setText(SessionApp.getPeixe().getDescricao());
+
+        spnCamara.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                camara = (Camara) spnCamara.getSelectedItem();
+                getPosicoesCamara();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spnEmbalagem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Embalagem embalagem = (Embalagem) spnEmbalagem.getSelectedItem();
+                if(embalagem.getDescricao().toLowerCase().equals("outro"))
+                    llPesoEmbalagem.setVisibility(View.VISIBLE);
+                else
+                    llPesoEmbalagem.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        showProgress(true);
+        threadDados = new Thread(DadosArmazenamentoActivity.this);
+        threadDados.start();
+    }
+
+    public void getDadosArmazenamento(){
+
+        callServer("get-json", "");
+
+        Message msg = new Message();
+        msg.what = ATUALIZAR_DADOS;
+        handler.sendMessage(msg);
+    }
+
+    public void getDadosArmazenamentoJSON(String data){
+        camaras = new ArrayList<Camara>();
+        embalagems = new ArrayList<Embalagem>();
+        tipoPeixes = new ArrayList<TipoPeixe>();
+        tamanhoPeixes = new ArrayList<TamanhoPeixe>();
+
+        try {
+            JSONObject object = new JSONObject(data);
+
+            JSONArray jCamaras = object.getJSONArray("camaras");
+
+            JSONArray jEmbalagens = object.getJSONArray("embalagens");
+
+            JSONArray jTamanhos = object.getJSONArray("tamanhos");
+
+            JSONArray jTipos = object.getJSONArray("tipos");
+
+            for (int i = 0; i < jCamaras.length() ; i++) {
+                Camara camara = new Camara();
+                camara.setId(jCamaras.getJSONObject(i).getLong("id"));
+                camara.setDescricao(jCamaras.getJSONObject(i).getString("descricao"));
+
+                camaras.add(camara);
+            }
+
+            for (int i = 0; i < jEmbalagens.length() ; i++) {
+                Embalagem embalagem = new Embalagem();
+                embalagem.setId(jEmbalagens.getJSONObject(i).getLong("id"));
+                embalagem.setDescricao(jEmbalagens.getJSONObject(i).getString("descricao"));
+
+                embalagems.add(embalagem);
+            }
+
+            for (int i = 0; i < jTamanhos.length() ; i++) {
+                TamanhoPeixe tamanhoPeixe = new TamanhoPeixe();
+                tamanhoPeixe.setId(jTamanhos.getJSONObject(i).getLong("id"));
+                tamanhoPeixe.setDescricao(jTamanhos.getJSONObject(i).getString("descricao"));
+
+                tamanhoPeixes.add(tamanhoPeixe);
+            }
+
+            for (int i = 0; i < jTipos.length() ; i++) {
+                TipoPeixe tipoPeixe = new TipoPeixe();
+                tipoPeixe.setId(jTipos.getJSONObject(i).getLong("id"));
+                tipoPeixe.setDescricao(jTipos.getJSONObject(i).getString("descricao"));
+
+                tipoPeixes.add(tipoPeixe);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void getPosicoesJSON(String dados){
+        posicaoCamaras = new ArrayList<PosicaoCamara>();
+
+        try {
+            JSONArray jPosicoes = new JSONArray(dados);
+
+            for (int i = 0; i < jPosicoes.length() ; i++) {
+                PosicaoCamara posicaoCamara = new PosicaoCamara();
+                posicaoCamara.setId(jPosicoes.getJSONObject(i).getLong("id"));
+                posicaoCamara.setDescricao(jPosicoes.getJSONObject(i).getString("descricao"));
+
+                posicaoCamaras.add(posicaoCamara);
+            }
+        }catch (Exception e){
+            Log.e("IPAPP_MA", e.getMessage());
+        }
+
+    }
+
+    private void callServer(final String method, final String data){
+
+        String ipServidor = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "ip_servidor");
+
+        String endereco_ws = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "endereco_ws");
+
+        String resposta = HttpConnection.getSetDataWeb("http://" + ipServidor + ":8080" + endereco_ws + "getDadosArmazenamento", method, data);
+
+        if (!resposta.isEmpty())
+            getDadosArmazenamentoJSON(resposta);
+    }
+
+    public void callServerPosicoesCamara(final String method, final String data){
+
+        String ipServidor = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "ip_servidor");
+
+        String endereco_ws = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "endereco_ws");
+
+        String resposta = HttpConnection.getSetDataWeb("http://" + ipServidor + ":8080" + endereco_ws + "getPosicoesCamara", method, data);
+
+        if (!resposta.isEmpty())
+            getPosicoesJSON(resposta);
+    }
+
+
+    public void getPosicoesCamara(){
+        //if (progressDialog == null)
+        //    progressDialog = ProgressDialog.show(DadosArmazenamentoActivity.this, "", "Carregando...", false, false);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("id", camara.getId());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                callServerPosicoesCamara("post-json", object.toString());
+
+                Message msg = new Message();
+                msg.what = ATUALIZAR_POSICOES;
+                handler.sendMessage(msg);
+
+            }
+        }).start();
+    }
+
+    private Handler handler = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+
+                case ATUALIZAR_DADOS:
+
+                    SpinnerCamaraAdapter camaraAdapter = new SpinnerCamaraAdapter(DadosArmazenamentoActivity.this, camaras);
+                    spnCamara.setAdapter(camaraAdapter);
+
+                    SpinnerEmbalagemAdapter embalagemAdapter = new SpinnerEmbalagemAdapter(DadosArmazenamentoActivity.this, embalagems);
+                    spnEmbalagem.setAdapter(embalagemAdapter);
+
+                    SpinnerTamanhoAdapter tamanhoAdapter = new SpinnerTamanhoAdapter(DadosArmazenamentoActivity.this, tamanhoPeixes);
+                    spnTamanho.setAdapter(tamanhoAdapter);
+
+                    SpinnerTipoPeixeAdapter tipoPeixeAdapter = new SpinnerTipoPeixeAdapter(DadosArmazenamentoActivity.this, tipoPeixes);
+                    spnTipoPeixe.setAdapter(tipoPeixeAdapter);
+
+                    showProgress(false);
+
+                    break;
+
+                case ATUALIZAR_POSICOES:
+
+                    SpinnerPosicoesAdapter posicoesAdapter = new SpinnerPosicoesAdapter(DadosArmazenamentoActivity.this, posicaoCamaras);
+                    spnPosicao.setAdapter(posicoesAdapter);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    public void salvarArmazenamento(){
+        try {
+
+            ItemResumo itemResumo = null;
+
+            if (SessionApp.getItens() == null || SessionApp.getItens().size() == 0) {
+                SessionApp.setItens(new ArrayList<ItemResumo>());
+            } else {
+                for (ItemResumo i : SessionApp.getItens()) {
+                    if (i.getTipo().equals("Armazenar")) {
+                        itemResumo = i;
+                        break;
+                    }
+                }
+            }
+
+            if (itemResumo == null) {
+                itemResumo = new ItemResumo();
+                itemResumo.setTipo("Armazenar");
+                SessionApp.getItens().add(itemResumo);
+            }
+
+            ArmazenamentoRetiradaAux aux = new ArmazenamentoRetiradaAux();
+            aux.setPeso(new BigDecimal(edtPeso.getText().toString()));
+            aux.setQtdeEmbalagem(Integer.parseInt(edtQtdeEmbalagem.getText().toString()));
+            aux.setObservacoes(edtObservacoes.getText() != null && !edtObservacoes.getText().toString().isEmpty() ? edtObservacoes.getText().toString() : null);
+            aux.setCamara((Camara)spnCamara.getSelectedItem());
+            aux.setPosicaoCamara((PosicaoCamara) spnPosicao.getSelectedItem());
+            aux.setEmbalagem((Embalagem) spnEmbalagem.getSelectedItem());
+            aux.setTipoPeixe((TipoPeixe) spnTipoPeixe.getSelectedItem());
+            aux.setTamanhoPeixe((TamanhoPeixe) spnTamanho.getSelectedItem());
+            aux.setPeixe(SessionApp.getPeixe());
+            aux.setPesoEmbalagem(edtPesoEmbalagem.getText() != null && !edtPesoEmbalagem.getText().toString().isEmpty() ? new BigDecimal(edtPesoEmbalagem.getText().toString()) : null);
+
+            if (itemResumo.getListaAR() == null || itemResumo.getListaAR().size() == 0) {
+                itemResumo.setListaAR(new ArrayList<ArmazenamentoRetiradaAux>());
+                itemResumo.getListaAR().add(aux);
+            }else
+                itemResumo.getListaAR().add(aux);
+
+            showDialogInformacao("Armazenamento adicionado com sucesso.");
+        }catch (Exception e){
+            showDialogAdvertencia("Não foi possivel salvar o armazenamnto.");
+        }
+    }
+
+    public void prepararSalvarArmazenamento(){
+
+        if(((Embalagem) spnEmbalagem.getSelectedItem()).getDescricao().toLowerCase().equals("outro")){
+            if((edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty())
+                    && (edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty())
+                    && (edtPesoEmbalagem.getText() != null && !edtPesoEmbalagem.getText().toString().isEmpty())){
+                salvarArmazenamento();
+            }else
+                showDialogAdvertencia("Preencha todos os campos obrigatórios (*) antes de salvar.");
+        }else {
+
+            if ((edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty())
+                    && (edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty())){
+                salvarArmazenamento();
+            }else{
+                showDialogAdvertencia("Preencha todos os campos obrigatórios (*) antes de salvar.");
+            }
+        }
+
+    }
+
+    private void showProgress(final boolean show) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(
+                    android.R.integer.config_shortAnimTime);
+
+            dadosStatus.setVisibility(View.VISIBLE);
+            dadosStatus.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 1 : 0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            dadosStatus.setVisibility(show ? View.VISIBLE
+                                    : View.GONE);
+                        }
+                    });
+
+            scrollDados.setVisibility(View.VISIBLE);
+            scrollDados.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 0 : 1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            scrollDados.setVisibility(show ? View.GONE
+                                    : View.VISIBLE);
+                        }
+                    });
+
+        } else {
+            dadosStatus.setVisibility(show ? View.VISIBLE : View.GONE);
+            scrollDados.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_dados_armazenamento, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.action_save:
+                prepararSalvarArmazenamento();
+                break;
+            case R.id.action_close:
+                finish();
+                break;
+        }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void run() {
+        getDadosArmazenamento();
+    }
+
+    public void showDialogAdvertencia(String msg){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DadosArmazenamentoActivity.this);
+
+        builder.setTitle("Advertência");
+
+        builder.setIcon(R.drawable.ic_alert_grey600_48dp);
+
+        builder.setMessage(msg);
+
+        builder.setNeutralButton("Fechar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showDialogInformacao(String msg){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DadosArmazenamentoActivity.this);
+
+        builder.setTitle("Informação");
+
+        builder.setIcon(R.drawable.ic_information_grey600_48dp);
+
+        builder.setMessage(msg);
+
+        builder.setNeutralButton("Fechar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                finish();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+}

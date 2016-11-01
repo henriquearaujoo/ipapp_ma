@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+
+    <style name="Theme.Irandubapescados" parent="@style/Theme.AppCompat.Light">
+        <item name="actionBarItemBackground">@drawable/selectable_background_irandubapescados</item>
+        <item name="popupMenuStyle">@style/PopupMenu.Irandubapescados</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Irandubapescados</item>
+        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Irandubapescados</item>
+        <item name="actionDropDownStyle">@style/DropDownNav.Irandubapescados</item>
+        <item name="actionBarStyle">@style/ActionBar.Solid.Irandubapescados</item>
+        <item name="actionModeBackground">@drawable/cab_background_top_irandubapescados</item>
+        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_irandubapescados</item>
+        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Irandubapescados</item>
+
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_irandubapescados</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Irandubapescados</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Irandubapescados</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Irandubapescados</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Irandubapescados</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Irandubapescados</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_irandubapescados</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_irandubapescados</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Irandubapescados</item>
+
+        <item name="android:editTextBackground">@drawable/colors_irandubapescados_edit_text_holo_light</item>
+
+        <item name="android:textColorHighlight">#9933b5e5</item>
+        <item name="android:textSelectHandleLeft">@drawable/colors_irandubapescados_text_select_handle_left</item>
+        <item name="android:textSelectHandleRight">@drawable/colors_irandubapescados_text_select_handle_right</item>
+        <item name="android:textSelectHandle">@drawable/colors_irandubapescados_text_select_handle_middle</item>
+
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewcolors_irandubapescados</item>
+
+        <item name="android:listChoiceIndicatorMultiple">@drawable/colors_irandubapescados_btn_check_holo_light</item>
+
+        <item name="android:listChoiceIndicatorSingle">@drawable/colors_irandubapescados_btn_radio_holo_light</item>
+
+        <item name="android:buttonStyle">@style/Buttoncolors_irandubapescados</item>
+
+        <item name="android:imageButtonStyle">@style/ImageButtoncolors_irandubapescados</item>
+
+        <item name="android:dropDownSpinnerStyle">@style/Spinnercolors_irandubapescados</item>
+
+        <item name="android:progressBarStyleHorizontal">@style/ProgressBarcolors_irandubapescados</item>
+
+        <item name="android:seekBarStyle">@style/SeekBarcolors_irandubapescados</item>
+
+        <item name="android:ratingBarStyle">@style/RatingBarcolors_irandubapescados</item>
+
+        <item name="android:ratingBarStyleIndicator">@style/RatingBarBigcolors_irandubapescados</item>
+
+        <item name="android:ratingBarStyleSmall">@style/RatingBarSmallcolors_irandubapescados</item>
+
+        <item name="android:buttonStyleToggle">@style/Togglecolors_irandubapescados</item>
+
+        <item name="android:listChoiceBackgroundIndicator">@drawable/colors_irandubapescados_list_selector_holo_light</item>
+
+        <item name="android:activatedBackgroundIndicator">@drawable/colors_irandubapescados_activated_background_holo_light</item>
+
+        <item name="android:fastScrollThumbDrawable">@drawable/colors_irandubapescados_fastscroll_thumb_holo</item>
+    </style>
+
+    <style name="ActionBar.Solid.Irandubapescados" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@drawable/ab_solid_irandubapescados</item>
+        <item name="backgroundStacked">@drawable/ab_stacked_solid_irandubapescados</item>
+        <item name="backgroundSplit">@drawable/ab_bottom_solid_irandubapescados</item>
+        <item name="progressBarStyle">@style/ProgressBar.Irandubapescados</item>
+
+        <item name="android:background">@drawable/ab_solid_irandubapescados</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_irandubapescados</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_irandubapescados</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Irandubapescados</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Irandubapescados" parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="background">@drawable/ab_transparent_irandubapescados</item>
+        <item name="progressBarStyle">@style/ProgressBar.Irandubapescados</item>
+
+        <item name="android:background">@drawable/ab_transparent_irandubapescados</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Irandubapescados</item>
+    </style>
+	
+    <style name="PopupMenu.Irandubapescados" parent="@style/Widget.AppCompat.Light.PopupMenu">	
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_irandubapescados</item>	
+    </style>
+	
+    <style name="DropDownListView.Irandubapescados" parent="@style/Widget.AppCompat.Light.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_irandubapescados</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Irandubapescados" parent="@style/Widget.AppCompat.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_irandubapescados</item>
+    </style>
+	
+    <style name="DropDownNav.Irandubapescados" parent="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+        <item name="android:background">@drawable/spinner_background_ab_irandubapescados</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_irandubapescados</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_irandubapescados</item>
+    </style>
+    
+    <style name="ProgressBar.Irandubapescados" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_irandubapescados</item>
+    </style>
+    
+    <style name="ActionButton.CloseMode.Irandubapescados" parent="@style/Widget.AppCompat.Light.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_irandubapescados</item>
+    </style>
+    
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Irandubapescados.Widget" parent="@style/Theme.AppCompat">
+        <item name="popupMenuStyle">@style/PopupMenu.Irandubapescados</item>
+        <item name="dropDownListViewStyle">@style/DropDownListView.Irandubapescados</item>
+    </style>
+
+</resources>

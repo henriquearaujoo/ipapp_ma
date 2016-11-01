@@ -1,0 +1,243 @@
+package br.com.speedy.ipapp.fragment;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
+import org.json.JSONArray;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.speedy.ipapp.R;
+
+import br.com.speedy.ipapp.adapter.PeixeAdapter;
+import br.com.speedy.ipapp.dialog.DialogDadosPeixe;
+import br.com.speedy.ipapp.model.Peixe;
+import br.com.speedy.ipapp.util.HttpConnection;
+import br.com.speedy.ipapp.util.SessionApp;
+import br.com.speedy.ipapp.util.SharedPreferencesUtil;
+
+public class PeixeFragment extends ListFragment implements Runnable, SwipeRefreshLayout.OnRefreshListener {
+
+    public static final int ATUALIZAR_LISTA = 1;
+    public static final int ATUALIZAR_LISTA_SWIPE = 2;
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    private List<Peixe> peixes;
+
+    private Peixe peixe;
+
+    private View peixesStatus;
+
+    private View peixesLista;
+
+    private PeixeAdapter adapter;
+
+    private Thread threadPeixes;
+
+    private SwipeRefreshLayout refreshLayout;
+
+    // TODO: Rename and change types of parameters
+    public static PeixeFragment newInstance(int position) {
+        PeixeFragment fragment = new PeixeFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, position);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public PeixeFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_peixe_list, container, false);
+
+        peixesLista = view.findViewById(R.id.peixes_lista);
+
+        peixesStatus = view.findViewById(R.id.peixes_status);
+
+        initSwipeDownToRefresh(view);
+
+        showProgress(true);
+        threadPeixes = new Thread(this);
+        threadPeixes.start();
+
+        return view;
+    }
+
+    public void getPeixes(){
+
+        callServer("get-json", "");
+
+        Message msg = new Message();
+        msg.what = ATUALIZAR_LISTA;
+        handler.sendMessage(msg);
+    }
+
+    public void getPeixesJSON(String data){
+        peixes = new ArrayList<Peixe>();
+
+        try {
+            JSONArray ja = new JSONArray(data);
+
+            for (int i = 0; i < ja.length() ; i++) {
+                Peixe p = new Peixe();
+                p.setId(ja.getJSONObject(i).getLong("id"));
+                p.setDescricao(ja.getJSONObject(i).getString("descricao"));
+                p.setValor(new BigDecimal(ja.getJSONObject(i).getString("valor")));
+
+                peixes.add(p);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void callServer(final String method, final String data){
+
+        String ipServidor = SharedPreferencesUtil.getPreferences(getActivity(), "ip_servidor");
+
+        String resposta = HttpConnection.getSetDataWeb("http://" + ipServidor + ":8080/ws_ipapp/webapi/myresource/getPeixes", method, data);
+
+        if (!resposta.isEmpty())
+            getPeixesJSON(resposta);
+    }
+
+    @Override
+    public void run() {
+        getPeixes();
+    }
+
+    private void showProgress(final boolean show) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(
+                    android.R.integer.config_shortAnimTime);
+
+            peixesStatus.setVisibility(View.VISIBLE);
+            peixesStatus.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 1 : 0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            peixesStatus.setVisibility(show ? View.VISIBLE
+                                    : View.GONE);
+                        }
+                    });
+
+            peixesLista.setVisibility(View.VISIBLE);
+            peixesLista.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 0 : 1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            peixesLista.setVisibility(show ? View.GONE
+                                    : View.VISIBLE);
+                        }
+                    });
+        } else {
+            peixesStatus.setVisibility(show ? View.VISIBLE : View.GONE);
+            peixesLista.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private Handler handler = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+
+                case ATUALIZAR_LISTA:
+
+                    adapter = new PeixeAdapter(getActivity(), peixes);
+
+                    setListAdapter(adapter);
+
+                    if (isAdded())
+                        showProgress(false);
+
+                    break;
+
+                case ATUALIZAR_LISTA_SWIPE:
+
+                    adapter = new PeixeAdapter(getActivity(), peixes);
+
+                    setListAdapter(adapter);
+
+                    stopSwipeRefresh();
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        peixe = (Peixe) this.getListAdapter().getItem(position);
+
+        SessionApp.setPeixe(peixe);
+
+        DialogFragment dadosPeixe = new DialogDadosPeixe();
+        dadosPeixe.show(getFragmentManager(), "dadosPeixe");
+
+    }
+
+    public void initSwipeDownToRefresh(View view){
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorScheme(android.R.color.holo_blue_light,
+                android.R.color.white, android.R.color.holo_blue_light,
+                android.R.color.white);
+    }
+
+    @Override
+    public void onRefresh() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                callServer("get-json", "");
+
+                Message msg = new Message();
+                msg.what = ATUALIZAR_LISTA_SWIPE;
+                handler.sendMessage(msg);
+            }
+        }).start();
+    }
+
+    private void stopSwipeRefresh() {
+        refreshLayout.setRefreshing(false);
+    }
+}

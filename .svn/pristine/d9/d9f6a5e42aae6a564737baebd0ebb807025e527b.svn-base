@@ -1,0 +1,66 @@
+package br.com.speedy.appapp_ma.util;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import br.com.speedy.appapp_ma.model.Armazenamento;
+import br.com.speedy.appapp_ma.model.Configuracoes;
+import br.com.speedy.appapp_ma.model.Peixe;
+import br.com.speedy.appapp_ma.model.UltimoLogin;
+import br.com.speedy.appapp_ma.model.Usuario;
+
+/**
+ * Created by henrique on 2015-03-01.
+ */
+public class SessionApp {
+
+    static private Peixe peixe;
+
+    static private Configuracoes configuracoes;
+
+    static private Usuario usuario;
+
+    static private UltimoLogin ultimoLogin;
+
+    static private List<ItemResumo> itens;
+
+    public static Configuracoes getConfiguracoes() {
+        return configuracoes;
+    }
+
+    public static void setConfiguracoes(Configuracoes configuracoes) {
+        SessionApp.configuracoes = configuracoes;
+    }
+
+    public static Usuario getUsuario() {
+        return usuario;
+    }
+
+    public static void setUsuario(Usuario usuario) {
+        SessionApp.usuario = usuario;
+    }
+
+    public static Peixe getPeixe() {
+        return peixe;
+    }
+
+    public static void setPeixe(Peixe peixe) {
+        SessionApp.peixe = peixe;
+    }
+
+    public static List<ItemResumo> getItens() {
+        return itens;
+    }
+
+    public static void setItens(List<ItemResumo> itens) {
+        SessionApp.itens = itens;
+    }
+
+    public static UltimoLogin getUltimoLogin() {
+        return ultimoLogin;
+    }
+
+    public static void setUltimoLogin(UltimoLogin ultimoLogin) {
+        SessionApp.ultimoLogin = ultimoLogin;
+    }
+}

@@ -1,0 +1,115 @@
+package br.com.speedy.appapp_ma.util;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import br.com.speedy.appapp_ma.model.Armazenamento;
+import br.com.speedy.appapp_ma.model.Configuracoes;
+import br.com.speedy.appapp_ma.model.Peixe;
+import br.com.speedy.appapp_ma.model.Usuario;
+
+/**
+ * Created by henrique on 2015-03-01.
+ */
+public class SessionApp {
+
+    static private PeixeDisponivel peixeDisponivel;
+
+    static  private Armazenamento armazenamento;
+
+    static private Configuracoes configuracoes;
+
+    static private Usuario usuario;
+
+    static private String filtroPeixeE;
+
+    static private String filtroPeixeS;
+
+    static private String filtroCamara;
+
+    static private String filtroCurral;
+
+    static private String filtroCompra;
+
+    static private List<ItemResumo> itens;
+
+    public static Configuracoes getConfiguracoes() {
+        return configuracoes;
+    }
+
+    public static void setConfiguracoes(Configuracoes configuracoes) {
+        SessionApp.configuracoes = configuracoes;
+    }
+
+    public static Usuario getUsuario() {
+        return usuario;
+    }
+
+    public static void setUsuario(Usuario usuario) {
+        SessionApp.usuario = usuario;
+    }
+
+    public static PeixeDisponivel getPeixeDisponivel() {
+        return peixeDisponivel;
+    }
+
+    public static void setPeixeDisponivel(PeixeDisponivel peixeDisponivel) {
+        SessionApp.peixeDisponivel = peixeDisponivel;
+    }
+
+    public static String getFiltroCamara() {
+        return filtroCamara;
+    }
+
+    public static void setFiltroCamara(String filtroCamara) {
+        SessionApp.filtroCamara = filtroCamara;
+    }
+
+    public static String getFiltroCurral() {
+        return filtroCurral;
+    }
+
+    public static void setFiltroCurral(String filtroCurral) {
+        SessionApp.filtroCurral = filtroCurral;
+    }
+
+    public static String getFiltroCompra() {
+        return filtroCompra;
+    }
+
+    public static void setFiltroCompra(String filtroCompra) {
+        SessionApp.filtroCompra = filtroCompra;
+    }
+
+    public static String getFiltroPeixeE() {
+        return filtroPeixeE;
+    }
+
+    public static void setFiltroPeixeE(String filtroPeixeE) {
+        SessionApp.filtroPeixeE = filtroPeixeE;
+    }
+
+    public static String getFiltroPeixeS() {
+        return filtroPeixeS;
+    }
+
+    public static void setFiltroPeixeS(String filtroPeixeS) {
+        SessionApp.filtroPeixeS = filtroPeixeS;
+    }
+
+    public static List<ItemResumo> getItens() {
+        return itens;
+    }
+
+    public static void setItens(List<ItemResumo> itens) {
+        SessionApp.itens = itens;
+    }
+
+    public static Armazenamento getArmazenamento() {
+        return armazenamento;
+    }
+
+    public static void setArmazenamento(Armazenamento armazenamento) {
+        SessionApp.armazenamento = armazenamento;
+    }
+}

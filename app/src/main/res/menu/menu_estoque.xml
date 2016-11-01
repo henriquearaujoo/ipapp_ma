@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="br.com.speedy.appapp_ma.ObservacoesActivity">
+    <item android:id="@+id/action_close" android:icon="@drawable/ic_close_circle_white_48dp"
+        android:title="@string/action_close"
+        android:orderInCategory="200" app:showAsAction="ifRoom" />
+</menu>

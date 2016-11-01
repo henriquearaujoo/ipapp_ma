@@ -1,0 +1,72 @@
+package br.com.speedy.appapp_ma.util;
+
+import java.math.BigDecimal;
+
+import br.com.speedy.appapp_ma.model.Peixe;
+import br.com.speedy.appapp_ma.model.Usuario;
+
+/**
+ * Created by henrique on 2015-04-05.
+ */
+public class ArmazenamentoRetiradaAux {
+
+    private Long id;
+
+    private BigDecimal peso;
+
+    private String camara;
+
+    private String curral;
+
+    private String descricaoPeixe;
+
+    private String destino;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getPeso() {
+        return peso;
+    }
+
+    public void setPeso(BigDecimal peso) {
+        this.peso = peso;
+    }
+
+    public String getCamara() {
+        return camara;
+    }
+
+    public void setCamara(String camara) {
+        this.camara = camara;
+    }
+
+    public String getCurral() {
+        return curral;
+    }
+
+    public void setCurral(String curral) {
+        this.curral = curral;
+    }
+
+    public String getDescricaoPeixe() {
+        return descricaoPeixe;
+    }
+
+    public void setDescricaoPeixe(String descricaoPeixe) {
+        this.descricaoPeixe = descricaoPeixe;
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public void setDestino(String destino) {
+        this.destino = destino;
+    }
+}

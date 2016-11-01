@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Módulo Armazenamento</string>
+    <string name="title_activity_main">Módulo Armazenamento</string>
+
+    <string name="title_section1">Armazenar</string>
+    <string name="title_section2">Retirar</string>
+    <string name="title_section3">Resumo</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_imei">IMEI</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_close">Fechar</string>
+    <string name="title_activity_dados_armazenamento">Dados do armazenamento</string>
+    <string name="title_activity_inconsistencias">Inconsistências</string>
+    <string name="title_activity_observacoes">Observações</string>
+    <string name="title_activity_estoque">Estoque por câmara</string>
+</resources>

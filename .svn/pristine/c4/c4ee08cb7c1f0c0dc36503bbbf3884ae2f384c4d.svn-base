@@ -1,0 +1,164 @@
+package br.com.speedy.ipapp.util;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import br.com.speedy.ipapp.model.Barco;
+import br.com.speedy.ipapp.model.Compra;
+import br.com.speedy.ipapp.model.Configuracoes;
+import br.com.speedy.ipapp.model.Fornecedor;
+import br.com.speedy.ipapp.model.Lote;
+import br.com.speedy.ipapp.model.Peixe;
+import br.com.speedy.ipapp.model.Usuario;
+
+/**
+ * Created by henrique on 2015-03-01.
+ */
+public class SessionApp {
+
+    static private Peixe peixe;
+
+    static private Fornecedor fornecedor;
+
+    static private Barco barco;
+
+    static private List<Lote> lotes;
+
+    static private Compra compra;
+
+    static private Integer totalCaixas;
+
+    static private BigDecimal totalPesoLiquido;
+
+    static private BigDecimal totalPesoBruto;
+
+    static private BigDecimal totalDescontos;
+
+    static private Configuracoes configuracoes;
+
+    static private Usuario usuario;
+
+    public static Peixe getPeixe() {return peixe;
+
+    }
+
+    public static void setPeixe(Peixe peixe) {
+        SessionApp.peixe  = peixe;
+    }
+
+    public static Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public static void setFornecedor(Fornecedor fornecedor) {
+        SessionApp.fornecedor = fornecedor;
+    }
+
+    public static List<Lote> getLotes() {
+        return lotes;
+    }
+
+    public static void setLotes(List<Lote> lotes) {
+        SessionApp.lotes = lotes;
+    }
+
+    public static Compra getCompra() {
+        return compra;
+    }
+
+    public static void setCompra(Compra compra) {
+        SessionApp.compra = compra;
+    }
+
+    public static Integer getTotalCaixas() {
+
+        totalCaixas = 0;
+
+        if (lotes != null){
+            for(Lote lote : lotes){
+                totalCaixas = totalCaixas + lote.getQtdCaixas();
+            }
+        }
+
+        return totalCaixas;
+    }
+
+    public static void setTotalCaixas(Integer totalCaixas) {
+
+        SessionApp.totalCaixas = totalCaixas;
+    }
+
+    public static BigDecimal getTotalPesoLiquido() {
+
+        totalPesoLiquido = BigDecimal.ZERO;
+
+        if (lotes != null){
+            for(Lote lote : lotes){
+                totalPesoLiquido = totalPesoLiquido.add(lote.getPesoLiquido());
+            }
+        }
+        return totalPesoLiquido;
+    }
+
+    public static void setTotalPesoLiquido(BigDecimal totalPesoLiquido) {
+        SessionApp.totalPesoLiquido = totalPesoLiquido;
+    }
+
+    public static BigDecimal getTotalPesoBruto() {
+
+        totalPesoBruto = BigDecimal.ZERO;
+
+        if (lotes != null){
+            for(Lote lote : lotes){
+                totalPesoBruto = totalPesoBruto.add(lote.getPeso());
+            }
+        }
+
+        return totalPesoBruto;
+    }
+
+    public static void setTotalPesoBruto(BigDecimal totalPesoBruto) {
+        SessionApp.totalPesoBruto = totalPesoBruto;
+    }
+
+    public static Barco getBarco() {
+        return barco;
+    }
+
+    public static void setBarco(Barco barco) {
+        SessionApp.barco = barco;
+    }
+
+    public static BigDecimal getTotalDescontos() {
+
+        totalDescontos = BigDecimal.ZERO;
+
+        if (lotes != null){
+            for(Lote lote : lotes){
+                totalDescontos = totalDescontos.add(lote.getDescontokg());
+            }
+        }
+
+        return totalDescontos;
+    }
+
+    public static void setTotalDescontos(BigDecimal totalDescontos) {
+        SessionApp.totalDescontos = totalDescontos;
+    }
+
+    public static Configuracoes getConfiguracoes() {
+        return configuracoes;
+    }
+
+    public static void setConfiguracoes(Configuracoes configuracoes) {
+        SessionApp.configuracoes = configuracoes;
+    }
+
+    public static Usuario getUsuario() {
+        return usuario;
+    }
+
+    public static void setUsuario(Usuario usuario) {
+        SessionApp.usuario = usuario;
+    }
+}

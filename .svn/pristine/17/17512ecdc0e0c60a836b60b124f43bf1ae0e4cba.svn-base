@@ -1,0 +1,117 @@
+package br.com.speedy.ipapp.model;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+public class Compra {
+
+	private Long id;
+	private Date dataCompra;
+	private BigDecimal valorTotal;
+	private String observacao;
+	private Boolean status;
+	private Boolean pause;
+	private Fornecedor fornecedor;
+    private Barco barco;
+	private List<Lote> lotes;
+	private String codigo;
+	
+	
+	
+	public Compra(){
+		
+		
+	}
+	
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	public Date getDataCompra() {
+		return dataCompra;
+	}
+
+	public void setDataCompra(Date dataCompra) {
+		this.dataCompra = dataCompra;
+	}
+
+	public String getObservacao() {
+		return observacao;
+	}
+
+	public void setObservacao(String observacao) {
+		this.observacao = observacao;
+	}
+	
+	
+	public Fornecedor getFornecedor() {
+		return fornecedor;
+	}
+
+	public void setFornecedor(Fornecedor fornecedor) {
+		this.fornecedor = fornecedor;
+	}
+
+	public Boolean getStatus() {
+		return status;
+	}
+
+	public void setStatus(Boolean status) {
+		this.status = status;
+	}
+
+
+	public BigDecimal getValorTotal() {
+		return valorTotal;
+	}
+
+
+	public void setValorTotal(BigDecimal valorTotal) {
+		this.valorTotal = valorTotal;
+	}
+
+
+	public List<Lote> getLotes() {
+		return lotes;
+	}
+
+
+	public void setLotes(List<Lote> lotes) {
+		this.lotes = lotes;
+	}
+
+
+	public Boolean getPause() {
+		return pause;
+	}
+
+
+	public void setPause(Boolean pause) {
+		this.pause = pause;
+	}
+
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+    public Barco getBarco() {
+        return barco;
+    }
+
+    public void setBarco(Barco barco) {
+        this.barco = barco;
+    }
+}

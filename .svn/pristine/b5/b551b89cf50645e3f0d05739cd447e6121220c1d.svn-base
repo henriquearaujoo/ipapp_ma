@@ -1,0 +1,309 @@
+package br.com.speedy.appapp_ma.fragment;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.speedy.appapp_ma.R;
+import br.com.speedy.appapp_ma.adapter.PeixeDisponivelAdapter;
+import br.com.speedy.appapp_ma.dialog.DialogDadosLoteEntrada;
+import br.com.speedy.appapp_ma.dialog.DialogFiltroPesquisaEntrada;
+import br.com.speedy.appapp_ma.util.HttpConnection;
+import br.com.speedy.appapp_ma.util.PeixeDisponivel;
+import br.com.speedy.appapp_ma.util.SessionApp;
+import br.com.speedy.appapp_ma.util.SharedPreferencesUtil;
+
+public class EntradaFragment extends ListFragment implements Runnable, SwipeRefreshLayout.OnRefreshListener {
+
+    public static final int ATUALIZAR_LISTA = 1;
+    public static final int ATUALIZAR_LISTA_SWIPE = 2;
+
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    private List<PeixeDisponivel> peixes;
+
+    private PeixeDisponivel peixeDisponivel;
+
+    private View peixesStatus;
+
+    private View peixesLista;
+
+    private PeixeDisponivelAdapter adapter;
+
+    private Thread threadPeixes;
+
+    private SwipeRefreshLayout refreshLayout;
+
+    private Button btPesquisar;
+
+    private Button btFiltro;
+
+    // TODO: Rename and change types of parameters
+    public static EntradaFragment newInstance(int position) {
+        EntradaFragment fragment = new EntradaFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, position);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public EntradaFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_entrada_list, container, false);
+
+        peixesLista = view.findViewById(R.id.peixes_lista);
+
+        peixesStatus = view.findViewById(R.id.peixes_status);
+
+        btPesquisar = (Button) view.findViewById(R.id.btEPesquisar);
+
+        btPesquisar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if ((SessionApp.getFiltroPeixeE() == null || SessionApp.getFiltroPeixeE().isEmpty())
+                        && (SessionApp.getFiltroCompra() == null || SessionApp.getFiltroCompra().isEmpty())){
+                    showDialogInformacao("Preencha pelo menos um dos campos de pesquisa.");
+                }else {
+                    showProgress(true);
+                    threadPeixes = new Thread(EntradaFragment.this);
+                    threadPeixes.start();
+                }
+            }
+        });
+
+        btFiltro = (Button) view.findViewById(R.id.btEFiltro);
+
+        btFiltro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment filtro = new DialogFiltroPesquisaEntrada();
+                filtro.show(getFragmentManager(), "dadosFiltroEntrada");
+            }
+        });
+
+        initSwipeDownToRefresh(view);
+
+        return view;
+    }
+
+    public void getPeixes(){
+
+        JSONObject object = new JSONObject();
+        try {
+            object.put("descricao", SessionApp.getFiltroPeixeE());
+            object.put("codigo", SessionApp.getFiltroCompra());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        callServer("post-json", object.toString());
+
+        Message msg = new Message();
+        msg.what = ATUALIZAR_LISTA;
+        handler.sendMessage(msg);
+    }
+
+    public void getPeixesJSON(String data){
+        peixes = new ArrayList<PeixeDisponivel>();
+
+        try {
+            JSONArray ja = new JSONArray(data);
+
+            for (int i = 0; i < ja.length() ; i++) {
+                PeixeDisponivel p = new PeixeDisponivel();
+                p.setId(ja.getJSONObject(i).getLong("id"));
+                p.setDescricao(ja.getJSONObject(i).getString("descricao"));
+                p.setPeso(new BigDecimal(ja.getJSONObject(i).getString("peso")));
+
+                peixes.add(p);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void callServer(final String method, final String data){
+
+        String ipServidor = SharedPreferencesUtil.getPreferences(getActivity(), "ip_servidor");
+
+        String resposta = HttpConnection.getSetDataWeb("http://" + ipServidor + ":8080/ws_ipapp/webapi/myresource/getPeixesDisponiveis", method, data);
+
+        if (!resposta.isEmpty())
+            getPeixesJSON(resposta);
+    }
+
+    @Override
+    public void run() {
+        getPeixes();
+    }
+
+    public void showDialogInformacao(String msg){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Informação");
+
+        builder.setMessage(msg);
+
+        builder.setPositiveButton("Fechar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showProgress(final boolean show) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(
+                    android.R.integer.config_shortAnimTime);
+
+            peixesStatus.setVisibility(View.VISIBLE);
+            peixesStatus.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 1 : 0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            peixesStatus.setVisibility(show ? View.VISIBLE
+                                    : View.GONE);
+                        }
+                    });
+
+            peixesLista.setVisibility(View.VISIBLE);
+            peixesLista.animate().setDuration(shortAnimTime)
+                    .alpha(show ? 0 : 1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            peixesLista.setVisibility(show ? View.GONE
+                                    : View.VISIBLE);
+                        }
+                    });
+        } else {
+            peixesStatus.setVisibility(show ? View.VISIBLE : View.GONE);
+            peixesLista.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private Handler handler = new Handler(){
+
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            switch (msg.what) {
+
+                case ATUALIZAR_LISTA:
+
+                    adapter = new PeixeDisponivelAdapter(getActivity(), peixes);
+
+                    setListAdapter(adapter);
+
+                    if (isAdded())
+                        showProgress(false);
+
+                    break;
+
+                case ATUALIZAR_LISTA_SWIPE:
+
+                    adapter = new PeixeDisponivelAdapter(getActivity(), peixes);
+
+                    setListAdapter(adapter);
+
+                    stopSwipeRefresh();
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        peixeDisponivel = (PeixeDisponivel) this.getListAdapter().getItem(position);
+
+        SessionApp.setPeixeDisponivel(peixeDisponivel);
+
+        DialogFragment dadosPeixe = new DialogDadosLoteEntrada();
+        dadosPeixe.show(getFragmentManager(), "dadosPeixe");
+
+    }
+
+    public void initSwipeDownToRefresh(View view){
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorScheme(android.R.color.holo_blue_light,
+                android.R.color.white, android.R.color.holo_blue_light,
+                android.R.color.white);
+    }
+
+    @Override
+    public void onRefresh() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("descricao", SessionApp.getFiltroPeixeE());
+                    object.put("codigo", SessionApp.getFiltroCompra());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                callServer("post-json", object.toString());
+
+                Message msg = new Message();
+                msg.what = ATUALIZAR_LISTA_SWIPE;
+                handler.sendMessage(msg);
+            }
+        }).start();
+    }
+
+    private void stopSwipeRefresh() {
+        refreshLayout.setRefreshing(false);
+    }
+}

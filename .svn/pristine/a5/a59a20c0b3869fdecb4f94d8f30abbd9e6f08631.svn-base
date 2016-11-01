@@ -1,0 +1,424 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="br.com.speedy.appapp_ma.DadosArmazenamentoActivity">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollDadosArmazenamento"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" >
+
+        <RelativeLayout android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingBottom="@dimen/activity_vertical_margin">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout9"
+                android:visibility="visible"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Peixe:"
+                    android:id="@+id/textView20"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_alignTop="@+id/spnDATipoPeixe"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="PEIXE:"
+                    android:id="@+id/txtDAPeixe"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignLeft="@+id/spnDATamanho"
+                    android:layout_alignStart="@+id/spnDATamanho"
+                    android:layout_marginLeft="150dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout9"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout1"
+                android:layout_marginTop="20dp"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Tipo do Peixe: *"
+                    android:id="@+id/textView9"
+                    android:layout_above="@+id/spnDATamanho"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_alignTop="@+id/spnDATipoPeixe"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnDATipoPeixe"
+                    android:spinnerMode="dialog"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignLeft="@+id/spnDATamanho"
+                    android:layout_alignStart="@+id/spnDATamanho"
+                    android:layout_marginLeft="79dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="gone"
+                android:layout_below="@+id/linearLayout3"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/llDAPesoEmbalagem"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Peso da embalagem: *"
+                    android:id="@+id/textView22"
+                    android:layout_below="@+id/spnDAEmbalagem"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_alignBottom="@+id/edtDAQtdeEmbalagem"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/edtDAPesoEmbalagem"
+                    android:hint="Digite o peso"
+                    android:layout_below="@+id/spnDAEmbalagem"
+                    android:layout_toRightOf="@+id/textView12"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="10dp"
+                    android:width="200dp"
+                    android:textSize="24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="visible"
+                android:layout_below="@+id/llDAPesoEmbalagem"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout4"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Qtde. de embalagens: *"
+                    android:id="@+id/textView12"
+                    android:layout_below="@+id/spnDAEmbalagem"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_alignBottom="@+id/edtDAQtdeEmbalagem"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/edtDAQtdeEmbalagem"
+                    android:hint="Digite a quantidade"
+                    android:layout_below="@+id/spnDAEmbalagem"
+                    android:layout_toRightOf="@+id/textView12"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:width="250dp"
+                    android:textSize="24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout4"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout5"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Peso: *"
+                    android:id="@+id/textView13"
+                    android:layout_below="@+id/textView12"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_above="@+id/textView14"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp" />
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/edtDAPeso"
+                    android:hint="Digite o peso"
+                    android:layout_below="@+id/edtDAQtdeEmbalagem"
+                    android:layout_alignLeft="@+id/edtDAQtdeEmbalagem"
+                    android:layout_alignStart="@+id/edtDAQtdeEmbalagem"
+                    android:layout_marginTop="10dp"
+                    android:width="200dp"
+                    android:layout_marginLeft="156dp"
+                    android:textSize="24dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout5"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout6"
+                android:layout_marginTop="20dp"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Câmara: *"
+                    android:id="@+id/textView14"
+                    android:layout_below="@+id/edtDAPeso"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_above="@+id/textView15"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnDACamara"
+                    android:layout_below="@+id/edtDAPeso"
+                    android:spinnerMode="dialog"
+                    android:layout_alignLeft="@+id/edtDAPeso"
+                    android:layout_alignStart="@+id/edtDAPeso"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="133dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout6"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout7"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Posição: *"
+                    android:id="@+id/textView15"
+                    android:layout_below="@+id/spnDACamara"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_above="@+id/edtDAObservacoes"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnDAPosicao"
+                    android:layout_below="@+id/spnDACamara"
+                    android:spinnerMode="dialog"
+                    android:layout_alignLeft="@+id/spnDACamara"
+                    android:layout_alignStart="@+id/spnDACamara"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="130dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout7"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout8"
+                android:layout_marginTop="10dp">
+
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:id="@+id/edtDAObservacoes"
+                    android:layout_below="@+id/spnDAPosicao"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:hint="Observações"
+                    android:lines="3"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dados_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center|center_horizontal"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true">
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/status_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="Carregando..."
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout1"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout2"
+                android:layout_marginTop="20dp"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Tamanho do peixe: *"
+                    android:id="@+id/textView10"
+                    android:layout_above="@+id/spnDAEmbalagem"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/textView9"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnDATamanho"
+                    android:spinnerMode="dialog"
+                    android:layout_below="@+id/spnDATipoPeixe"
+                    android:layout_alignLeft="@+id/spnDAEmbalagem"
+                    android:layout_alignStart="@+id/spnDAEmbalagem"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="37dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_below="@+id/linearLayout2"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/linearLayout3"
+                android:layout_marginTop="20dp"
+                android:baselineAligned="false">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Embalagem: *"
+                    android:id="@+id/textView11"
+                    android:layout_above="@+id/edtDAQtdeEmbalagem"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textStyle="bold"
+                    android:layout_below="@+id/textView10"
+                    android:layout_marginTop="5dp"
+                    android:textSize="20dp" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spnDAEmbalagem"
+                    android:spinnerMode="dialog"
+                    android:layout_below="@+id/spnDATamanho"
+                    android:layout_alignLeft="@+id/edtDAQtdeEmbalagem"
+                    android:layout_alignStart="@+id/edtDAQtdeEmbalagem"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="95dp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        </ScrollView>
+
+</RelativeLayout>

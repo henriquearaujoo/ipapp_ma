@@ -1,0 +1,97 @@
+package br.com.speedy.appapp_ma.dialog;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+
+import br.com.speedy.appapp_ma.R;
+import br.com.speedy.appapp_ma.util.PeixeDisponivel;
+import br.com.speedy.appapp_ma.util.SessionApp;
+
+/**
+ * TODO: document your custom view class.
+ */
+public class DialogFiltroPesquisaEntrada extends DialogFragment {
+
+    private PeixeDisponivel peixe;
+
+    private EditText editTextPeixe;
+
+    private EditText editTextCompra;
+
+    public DialogFiltroPesquisaEntrada(){
+
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        View view = inflater.inflate(R.layout.sample_dialog_filtro_entrada, null);
+
+        this.peixe = SessionApp.getPeixeDisponivel();
+
+        editTextPeixe = (EditText) view.findViewById(R.id.edtDEPeixe);
+
+        editTextCompra = (EditText) view.findViewById(R.id.edtDECompra);
+
+        if (SessionApp.getFiltroPeixeE() != null && !SessionApp.getFiltroPeixeE().isEmpty())
+            editTextPeixe.setText(SessionApp.getFiltroPeixeE());
+
+        if (SessionApp.getFiltroCompra() != null && !SessionApp.getFiltroCompra().isEmpty())
+            editTextCompra.setText(SessionApp.getFiltroCompra());
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(view)
+                // Add action buttons
+                .setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        SessionApp.setFiltroPeixeE(editTextPeixe.getText().toString());
+                        SessionApp.setFiltroCompra(editTextCompra.getText().toString());
+                    }
+                })
+                .setNegativeButton("Fechar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        DialogFiltroPesquisaEntrada.this.getDialog().cancel();
+                    }
+                });
+
+        builder.setTitle("Filtro da pesquisa");
+
+        return builder.create();
+    }
+
+    public void showDialogSucesso(String msg){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Sucesso");
+
+        builder.setMessage(msg);
+
+        builder.setPositiveButton("Fechar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+}
