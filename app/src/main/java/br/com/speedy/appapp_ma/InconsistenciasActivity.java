@@ -550,7 +550,7 @@ public class InconsistenciasActivity extends ActionBarActivity implements Runnab
                         txtTotalArmazenar.setText(FormatterUtil.getValorFormatado(totalArm) + " kg");
                         txtTotalRetirar.setText(FormatterUtil.getValorFormatado(totalRet) + " kg");
 
-                        adapter = new ResumoAdapter(InconsistenciasActivity.this, SessionApp.getInconsistencias());
+                        //adapter = new ResumoAdapter(InconsistenciasActivity.this, SessionApp.getInconsistencias());
 
                         setListAdapter(adapter);
 

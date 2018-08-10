@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.speedy.appapp_ma.dialog.DialogDadosConfiguracaoSenha;
+import br.com.speedy.appapp_ma.enumerated.Posto;
 import br.com.speedy.appapp_ma.model.UltimoLogin;
 import br.com.speedy.appapp_ma.model.Usuario;
 import br.com.speedy.appapp_ma.util.DialogUtil;
@@ -76,11 +77,11 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         //Utilizar em desenvolvimento
-        SharedPreferencesUtil.writePreferences(LoginActivity.this, "ip_servidor", "192.168.107.2");
+        SharedPreferencesUtil.writePreferences(LoginActivity.this, "ip_servidor", "192.168.43.32");
 
-        SharedPreferencesUtil.writePreferences(LoginActivity.this, "endereco_ws", "/webapi/myresource/");
-
-        SharedPreferencesUtil.writePreferences(LoginActivity.this, "porta_servidor", "8080");
+        SharedPreferencesUtil.writePreferences(LoginActivity.this, "endereco_ws", "/ws_ipapp/webapi/myresource/");
+ 
+        SharedPreferencesUtil.writePreferences(LoginActivity.this, "porta_servidor", "8081");
 
         //Descomentar pára producao
         /*SharedPreferencesUtil.writePreferences(LoginActivity.this, "ip_servidor", "192.168.110.2");
@@ -88,6 +89,8 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         SharedPreferencesUtil.writePreferences(LoginActivity.this, "endereco_ws", "/ws_ipapp/webapi/myresource/");
 
         SharedPreferencesUtil.writePreferences(LoginActivity.this, "porta_servidor", "7777");*/
+
+        SharedPreferencesUtil.writePreferences(LoginActivity.this, "posto", Posto.ESTOCAGEM_1.toString());
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);

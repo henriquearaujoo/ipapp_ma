@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import br.com.speedy.appapp_ma.R;
+import br.com.speedy.appapp_ma.enumerated.Posto;
 import br.com.speedy.appapp_ma.util.FormatterUtil;
 import br.com.speedy.appapp_ma.util.ItemResumo;
 
@@ -25,9 +26,12 @@ public class ResumoAdapter extends BaseExpandableListAdapter {
 
     private Context context;
 
-    public ResumoAdapter(Context context, List<ItemResumo> itensResumo){
+    private String posto;
+
+    public ResumoAdapter(Context context, List<ItemResumo> itensResumo, String posto){
         this.context = context;
         this.itensResumo = itensResumo;
+        this.posto = posto;
     }
 
     @Override
@@ -74,12 +78,8 @@ public class ResumoAdapter extends BaseExpandableListAdapter {
     private class ViewHolderChild{
         TextView txtId;
         TextView txtDescricao;
-        //TextView txtPeixe;
-        //TextView txtPeso;
         TextView txtCamara;
         TextView txtPosicao;
-        //TextView txtTipo;
-        //TextView txtTamanho;
         TextView txtEmbalagem;
         TextView txtQtdeEmbalagem;
         TextView txtPesoEmbalagem;
@@ -126,12 +126,8 @@ public class ResumoAdapter extends BaseExpandableListAdapter {
                 holder = new ViewHolderChild();
                 holder.txtId = (TextView) convertView.findViewById(R.id.txtREId);
                 holder.txtDescricao = (TextView) convertView.findViewById(R.id.txtREDescricao);
-                //holder.txtPeixe = (TextView) convertView.findViewById(R.id.txtREPeixe);
-                //holder.txtPeso = (TextView) convertView.findViewById(R.id.txtREPeso);
                 holder.txtCamara = (TextView) convertView.findViewById(R.id.txtRECamara);
                 holder.txtPosicao = (TextView) convertView.findViewById(R.id.txtREPosicao);
-                //holder.txtTipo = (TextView) convertView.findViewById(R.id.txtRETipo);
-                //holder.txtTamanho = (TextView) convertView.findViewById(R.id.txtRETamanho);
                 holder.txtEmbalagem = (TextView) convertView.findViewById(R.id.txtREEmbalagem);
                 holder.txtQtdeEmbalagem = (TextView) convertView.findViewById(R.id.txtREQtdeEmbalagem);
                 holder.txtPesoEmbalagem = (TextView) convertView.findViewById(R.id.txtREPesoEmbalagem);
@@ -144,8 +140,6 @@ public class ResumoAdapter extends BaseExpandableListAdapter {
                 holder.txtDescricao = (TextView) convertView.findViewById(R.id.txtResSDescricao);
                 holder.txtCamara = (TextView) convertView.findViewById(R.id.txtResSCamara);
                 holder.txtPosicao = (TextView) convertView.findViewById(R.id.txtResSPosicao);
-                //holder.txtPeixe = (TextView) convertView.findViewById(R.id.txtResSPeixe);
-                //holder.txtPeso = (TextView) convertView.findViewById(R.id.txtResSPeso);
                 holder.txtDestino = (TextView) convertView.findViewById(R.id.txtResSDestino);
                 holder.txtQtdeEmbalagem = (TextView) convertView.findViewById(R.id.txtResSQtdeEmbalagem);
             }
@@ -167,8 +161,15 @@ public class ResumoAdapter extends BaseExpandableListAdapter {
             String descricao = FormatterUtil.getValorFormatado(itemResumo.getListaAR().get(childPosition).getPeso()) + " kg" + " de " + itemResumo.getListaAR().get(childPosition).getPeixe().getDescricao().toString()
                                 + ", " + itemResumo.getListaAR().get(childPosition).getTipoPeixe().getDescricao().toString() + ", " + tamanho;
             holder.txtDescricao.setText(descricao);
-            holder.txtCamara.setText(itemResumo.getListaAR().get(childPosition).getCamara().getDescricao().toString());
-            holder.txtPosicao.setText(itemResumo.getListaAR().get(childPosition).getPosicaoCamara().getDescricao().toString());
+            if (!posto.equals(Posto.TUNEL.toString()))
+                holder.txtCamara.setText(itemResumo.getListaAR().get(childPosition).getCamara().getDescricao().toString());
+            else
+                holder.txtCamara.setText("--");
+
+            if (!posto.equals(Posto.TUNEL.toString()))
+                holder.txtPosicao.setText(itemResumo.getListaAR().get(childPosition).getPosicaoCamara().getDescricao().toString());
+            else
+                holder.txtPosicao.setText("--");
             holder.txtEmbalagem.setText(embalagem);
             holder.txtQtdeEmbalagem.setText(itemResumo.getListaAR().get(childPosition).getQtdeEmbalagem().toString());
         }else{
@@ -176,8 +177,17 @@ public class ResumoAdapter extends BaseExpandableListAdapter {
             String descricao = FormatterUtil.getValorFormatado(itemResumo.getListaAR().get(childPosition).getPeso()) + " kg" + " de " + itemResumo.getListaAR().get(childPosition).getPeixe().getDescricao().toString()
                     + ", " + itemResumo.getListaAR().get(childPosition).getTipoPeixe().getDescricao().toString() + ", " + tamanho;
             holder.txtDescricao.setText(descricao);
-            holder.txtCamara.setText(itemResumo.getListaAR().get(childPosition).getCamara().getDescricao().toString());
-            holder.txtPosicao.setText(itemResumo.getListaAR().get(childPosition).getPosicaoCamara().getDescricao().toString());
+
+            if (!posto.equals(Posto.TUNEL.toString()))
+                holder.txtCamara.setText(itemResumo.getListaAR().get(childPosition).getCamara().getDescricao().toString());
+            else
+                holder.txtCamara.setText("--");
+
+            if (!posto.equals(Posto.TUNEL.toString()))
+                holder.txtPosicao.setText(itemResumo.getListaAR().get(childPosition).getPosicaoCamara().getDescricao().toString());
+            else
+                holder.txtPosicao.setText("--");
+
             holder.txtDestino.setText(itemResumo.getListaAR().get(childPosition).getDestino());
             holder.txtQtdeEmbalagem.setText(itemResumo.getListaAR().get(childPosition).getQtdeEmbalagem().toString());
         }

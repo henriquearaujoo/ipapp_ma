@@ -43,6 +43,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.com.speedy.appapp_ma.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".DadosReriradaActivity"
+            android:label="@string/title_activity_dados_retirada"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="br.com.speedy.appapp_ma.MainActivity" />
+        </activity>
         <activity
             android:name=".InconsistenciasActivity"
             android:label="@string/title_activity_inconsistencias"

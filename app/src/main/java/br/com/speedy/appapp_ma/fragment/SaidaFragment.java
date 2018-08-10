@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +33,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.speedy.appapp_ma.DadosArmazenamentoActivity;
+import br.com.speedy.appapp_ma.DadosReriradaActivity;
 import br.com.speedy.appapp_ma.R;
 import br.com.speedy.appapp_ma.adapter.PeixeAdapter;
 import br.com.speedy.appapp_ma.dialog.DialogDadosSaida;
@@ -387,7 +390,10 @@ public class SaidaFragment extends ListFragment implements Runnable, SwipeRefres
 
         SessionApp.setPeixe(peixe);
 
-        progressDialog = ProgressDialog.show(getActivity(), "", "Carregando, aguarde.", false, false);
+        Intent i = new Intent(getActivity(), DadosReriradaActivity.class);
+        startActivity(i);
+
+        /*progressDialog = ProgressDialog.show(getActivity(), "", "Carregando, aguarde.", false, false);
 
         new Thread(new Runnable() {
             @Override
@@ -399,7 +405,7 @@ public class SaidaFragment extends ListFragment implements Runnable, SwipeRefres
                 msg.what = ABRIR_DIALOG;
                 handler.sendMessage(msg);
             }
-        }).start();
+        }).start();*/
 
     }
 

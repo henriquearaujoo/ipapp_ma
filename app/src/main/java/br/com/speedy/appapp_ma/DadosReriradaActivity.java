@@ -6,10 +6,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.speedy.appapp_ma.adapter.SpinnerCamaraAdapter;
+import br.com.speedy.appapp_ma.adapter.SpinnerDestinoAdapter;
 import br.com.speedy.appapp_ma.adapter.SpinnerEmbalagemAdapter;
 import br.com.speedy.appapp_ma.adapter.SpinnerPosicoesAdapter;
 import br.com.speedy.appapp_ma.adapter.SpinnerTamanhoAdapter;
@@ -47,7 +48,7 @@ import br.com.speedy.appapp_ma.util.SessionApp;
 import br.com.speedy.appapp_ma.util.SharedPreferencesUtil;
 
 
-public class DadosArmazenamentoActivity extends ActionBarActivity implements Runnable {
+public class DadosReriradaActivity extends ActionBarActivity implements Runnable {
 
     public static final int ATUALIZAR_DADOS = 1;
     public static final int ATUALIZAR_POSICOES = 2;
@@ -58,6 +59,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
     private List<TamanhoPeixe> tamanhoPeixes;
     private List<PosicaoCamara> posicaoCamaras;
 
+    private Spinner spnDestino;
     private Spinner spnTipoPeixe;
     private Spinner spnTamanho;
     private Spinner spnEmbalagem;
@@ -95,14 +97,14 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
     private String posto;
 
-    public DadosArmazenamentoActivity(){
+    public DadosReriradaActivity(){
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dados_armazenamento);
+        setContentView(R.layout.activity_dados_retirada);
 
         posto = SharedPreferencesUtil.getPreferences(this, "posto");
 
@@ -118,6 +120,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
         llPosicao = findViewById(R.id.llDAPosicao);
 
+        spnDestino = (Spinner) findViewById(R.id.spnDSDestino);
         spnTipoPeixe = (Spinner) findViewById(R.id.spnDATipoPeixe);
         spnTamanho = (Spinner) findViewById(R.id.spnDATamanho);
         spnEmbalagem = (Spinner) findViewById(R.id.spnDAEmbalagem);
@@ -187,7 +190,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
         }
 
         showProgress(true);
-        threadDados = new Thread(DadosArmazenamentoActivity.this);
+        threadDados = new Thread(DadosReriradaActivity.this);
         threadDados.start();
     }
 
@@ -286,11 +289,11 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
     private void callServer(final String method, final String data){
 
-        String ipServidor = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "ip_servidor");
+        String ipServidor = SharedPreferencesUtil.getPreferences(DadosReriradaActivity.this, "ip_servidor");
 
-        String endereco_ws = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "endereco_ws");
+        String endereco_ws = SharedPreferencesUtil.getPreferences(DadosReriradaActivity.this, "endereco_ws");
 
-        String porta_servidor = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "porta_servidor");
+        String porta_servidor = SharedPreferencesUtil.getPreferences(DadosReriradaActivity.this, "porta_servidor");
 
         String resposta = HttpConnection.getSetDataWeb("http://" + ipServidor + ":" + porta_servidor + endereco_ws + "getDadosArmazenamento", method, data);
 
@@ -300,11 +303,11 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
     public void callServerPosicoesCamara(final String method, final String data){
 
-        String ipServidor = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "ip_servidor");
+        String ipServidor = SharedPreferencesUtil.getPreferences(DadosReriradaActivity.this, "ip_servidor");
 
-        String endereco_ws = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "endereco_ws");
+        String endereco_ws = SharedPreferencesUtil.getPreferences(DadosReriradaActivity.this, "endereco_ws");
 
-        String porta_servidor = SharedPreferencesUtil.getPreferences(DadosArmazenamentoActivity.this, "porta_servidor");
+        String porta_servidor = SharedPreferencesUtil.getPreferences(DadosReriradaActivity.this, "porta_servidor");
 
         String resposta = HttpConnection.getSetDataWeb("http://" + ipServidor + ":" + porta_servidor + endereco_ws + "getPosicoesCamara", method, data);
 
@@ -347,17 +350,25 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
                 case ATUALIZAR_DADOS:
 
-                    SpinnerCamaraAdapter camaraAdapter = new SpinnerCamaraAdapter(DadosArmazenamentoActivity.this, camaras);
+                    SpinnerCamaraAdapter camaraAdapter = new SpinnerCamaraAdapter(DadosReriradaActivity.this, camaras);
                     spnCamara.setAdapter(camaraAdapter);
 
-                    SpinnerEmbalagemAdapter embalagemAdapter = new SpinnerEmbalagemAdapter(DadosArmazenamentoActivity.this, embalagems);
+                    SpinnerEmbalagemAdapter embalagemAdapter = new SpinnerEmbalagemAdapter(DadosReriradaActivity.this, embalagems);
                     spnEmbalagem.setAdapter(embalagemAdapter);
 
-                    SpinnerTamanhoAdapter tamanhoAdapter = new SpinnerTamanhoAdapter(DadosArmazenamentoActivity.this, tamanhoPeixes);
+                    SpinnerTamanhoAdapter tamanhoAdapter = new SpinnerTamanhoAdapter(DadosReriradaActivity.this, tamanhoPeixes);
                     spnTamanho.setAdapter(tamanhoAdapter);
 
-                    SpinnerTipoPeixeAdapter tipoPeixeAdapter = new SpinnerTipoPeixeAdapter(DadosArmazenamentoActivity.this, tipoPeixes);
+                    SpinnerTipoPeixeAdapter tipoPeixeAdapter = new SpinnerTipoPeixeAdapter(DadosReriradaActivity.this, tipoPeixes);
                     spnTipoPeixe.setAdapter(tipoPeixeAdapter);
+
+                    List<String> itens = new ArrayList<String>();
+                    itens.add("Processo");
+                    itens.add("Descarte");
+                    itens.add("Cozinha");
+
+                    SpinnerDestinoAdapter adapter = new SpinnerDestinoAdapter(DadosReriradaActivity.this, itens);
+                    spnDestino.setAdapter(adapter);
 
                     if(aux != null) {
                         preencherDados();
@@ -369,7 +380,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
                 case ATUALIZAR_POSICOES:
 
-                    SpinnerPosicoesAdapter posicoesAdapter = new SpinnerPosicoesAdapter(DadosArmazenamentoActivity.this, posicaoCamaras);
+                    SpinnerPosicoesAdapter posicoesAdapter = new SpinnerPosicoesAdapter(DadosReriradaActivity.this, posicaoCamaras);
                     spnPosicao.setAdapter(posicoesAdapter);
 
                     if (aux != null){
@@ -428,6 +439,15 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
             }
         }
 
+        if (aux.getDestino().toLowerCase().equals("processo"))
+            spnDestino.setSelection(0);
+        else if (aux.getDestino().toLowerCase().equals("descarte"))
+            spnDestino.setSelection(1);
+        else if (aux.getDestino().toLowerCase().equals("cozinha"))
+            spnDestino.setSelection(2);
+        else
+            spnDestino.setSelection(3);
+
         edtPeso.setText(FormatterUtil.getValorFormatado(aux.getPeso()));
         edtQtdeEmbalagem.setText(aux.getQtdeEmbalagem().toString());
         txtPeixe.setText(aux.getPeixe().getDescricao().toString());
@@ -442,7 +462,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                     if (edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty()
                             && edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty()
                             && spnCamara.getSelectedItem() != null && spnPosicao.getSelectedItem() != null
-                            && spnTipoPeixe.getSelectedItem() != null) {
+                            && spnTipoPeixe.getSelectedItem() != null && spnDestino.getSelectedItem() != null) {
 
                         ItemResumo itemResumo = null;
 
@@ -450,7 +470,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                             SessionApp.setItens(new ArrayList<ItemResumo>());
                         } else {
                             for (ItemResumo i : SessionApp.getItens()) {
-                                if (i.getTipo().equals("Armazenar")) {
+                                if (i.getTipo().equals("Retirar")) {
                                     itemResumo = i;
                                     break;
                                 }
@@ -459,7 +479,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
                         if (itemResumo == null) {
                             itemResumo = new ItemResumo();
-                            itemResumo.setTipo("Armazenar");
+                            itemResumo.setTipo("Retirar");
                             SessionApp.getItens().add(itemResumo);
                         }
 
@@ -473,6 +493,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                         aux.setTipoPeixe((TipoPeixe) spnTipoPeixe.getSelectedItem());
                         aux.setTamanhoPeixe(spnTamanho.getSelectedItem() != null ? (TamanhoPeixe) spnTamanho.getSelectedItem() : null);
                         aux.setPeixe(SessionApp.getPeixe());
+                        aux.setDestino((String) spnDestino.getSelectedItem());
                         aux.setPesoEmbalagem(edtPesoEmbalagem.getText() != null && !edtPesoEmbalagem.getText().toString().isEmpty() ? new BigDecimal(edtPesoEmbalagem.getText().toString().replace(",", ".")) : null);
 
                         if (itemResumo.getListaAR() == null || itemResumo.getListaAR().size() == 0) {
@@ -481,7 +502,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                         } else
                             itemResumo.getListaAR().add(aux);
 
-                        showDialogInformacao("Armazenamento adicionado com sucesso.");
+                        showDialogInformacao("Retirada adicionado com sucesso.");
 
                     } else {
                         showDialogAdvertencia("Preencha todos os campos obrigatórios (*) antes de salvar.");
@@ -489,7 +510,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                 }else{
                     if (edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty()
                             && edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty()
-                            && spnTipoPeixe.getSelectedItem() != null) {
+                            && spnTipoPeixe.getSelectedItem() != null && spnDestino.getSelectedItem() != null) {
 
                         ItemResumo itemResumo = null;
 
@@ -497,7 +518,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                             SessionApp.setItens(new ArrayList<ItemResumo>());
                         } else {
                             for (ItemResumo i : SessionApp.getItens()) {
-                                if (i.getTipo().equals("Armazenar")) {
+                                if (i.getTipo().equals("Retirar")) {
                                     itemResumo = i;
                                     break;
                                 }
@@ -506,7 +527,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
 
                         if (itemResumo == null) {
                             itemResumo = new ItemResumo();
-                            itemResumo.setTipo("Armazenar");
+                            itemResumo.setTipo("Retirar");
                             SessionApp.getItens().add(itemResumo);
                         }
 
@@ -514,12 +535,13 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                         aux.setPeso(new BigDecimal(edtPeso.getText().toString().replace(",", ".")));
                         aux.setQtdeEmbalagem(Integer.parseInt(edtQtdeEmbalagem.getText().toString()));
                         aux.setObservacoes(edtObservacoes.getText() != null && !edtObservacoes.getText().toString().isEmpty() ? edtObservacoes.getText().toString() : null);
-                        aux.setCamara(null);
-                        aux.setPosicaoCamara(null);
+                        aux.setCamara((Camara) spnCamara.getSelectedItem());
+                        aux.setPosicaoCamara((PosicaoCamara) spnPosicao.getSelectedItem());
                         aux.setEmbalagem(spnEmbalagem.getSelectedItem() != null ? (Embalagem) spnEmbalagem.getSelectedItem() : null);
                         aux.setTipoPeixe((TipoPeixe) spnTipoPeixe.getSelectedItem());
                         aux.setTamanhoPeixe(spnTamanho.getSelectedItem() != null ? (TamanhoPeixe) spnTamanho.getSelectedItem() : null);
                         aux.setPeixe(SessionApp.getPeixe());
+                        aux.setDestino((String) spnDestino.getSelectedItem());
                         aux.setPesoEmbalagem(edtPesoEmbalagem.getText() != null && !edtPesoEmbalagem.getText().toString().isEmpty() ? new BigDecimal(edtPesoEmbalagem.getText().toString().replace(",", ".")) : null);
 
                         if (itemResumo.getListaAR() == null || itemResumo.getListaAR().size() == 0) {
@@ -528,7 +550,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                         } else
                             itemResumo.getListaAR().add(aux);
 
-                        showDialogInformacao("Armazenamento adicionado com sucesso.");
+                        showDialogInformacao("Retirada adicionado com sucesso.");
 
                     } else {
                         showDialogAdvertencia("Preencha todos os campos obrigatórios (*) antes de salvar.");
@@ -540,10 +562,10 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                     if (edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty()
                             && edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty()
                             && spnCamara.getSelectedItem() != null && spnPosicao.getSelectedItem() != null
-                            && spnTipoPeixe.getSelectedItem() != null) {
+                            && spnTipoPeixe.getSelectedItem() != null && spnDestino.getSelectedItem() != null) {
 
                         for (ItemResumo itemResumo : SessionApp.getInconsistencias()) {
-                            if (itemResumo.getTipo().equals("Armazenar")) {
+                            if (itemResumo.getTipo().equals("Retirar")) {
                                 for (ArmazenamentoRetiradaAux aux1 : itemResumo.getListaAR()) {
                                     if (aux1.getId().longValue() == aux.getId().longValue()) {
                                         aux1.setPeso(new BigDecimal(edtPeso.getText().toString().replace(",", ".")));
@@ -555,6 +577,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                                         aux1.setTipoPeixe((TipoPeixe) spnTipoPeixe.getSelectedItem());
                                         aux1.setTamanhoPeixe(spnTamanho.getSelectedItem() != null ? (TamanhoPeixe) spnTamanho.getSelectedItem() : null);
                                         aux1.setPeixe(SessionApp.getPeixe());
+                                        aux1.setDestino((String) spnDestino.getSelectedItem());
                                         aux1.setPesoEmbalagem(edtPesoEmbalagem.getText() != null && !edtPesoEmbalagem.getText().toString().isEmpty() ? new BigDecimal(edtPesoEmbalagem.getText().toString().replace(",", ".")) : null);
 
                                         break;
@@ -564,28 +587,29 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                             }
                         }
 
-                        showDialogInformacao("Armazenamento editado com sucesso.");
+                        showDialogInformacao("Retirada editada com sucesso.");
                     } else {
                         showDialogAdvertencia("Preencha todos os campos obrigatórios (*) antes de salvar.");
                     }
                 }else{
                     if (edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty()
                             && edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty()
-                            && spnTipoPeixe.getSelectedItem() != null) {
+                            && spnTipoPeixe.getSelectedItem() != null && spnDestino.getSelectedItem() != null) {
 
                         for (ItemResumo itemResumo : SessionApp.getInconsistencias()) {
-                            if (itemResumo.getTipo().equals("Armazenar")) {
+                            if (itemResumo.getTipo().equals("Retirar")) {
                                 for (ArmazenamentoRetiradaAux aux1 : itemResumo.getListaAR()) {
                                     if (aux1.getId().longValue() == aux.getId().longValue()) {
                                         aux1.setPeso(new BigDecimal(edtPeso.getText().toString().replace(",", ".")));
                                         aux1.setQtdeEmbalagem(Integer.parseInt(edtQtdeEmbalagem.getText().toString()));
                                         aux1.setObservacoes(edtObservacoes.getText() != null && !edtObservacoes.getText().toString().isEmpty() ? edtObservacoes.getText().toString() : null);
-                                        aux1.setCamara(null);
-                                        aux1.setPosicaoCamara(null);
+                                        aux1.setCamara((Camara) spnCamara.getSelectedItem());
+                                        aux1.setPosicaoCamara((PosicaoCamara) spnPosicao.getSelectedItem());
                                         aux1.setEmbalagem(spnEmbalagem.getSelectedItem() != null ? (Embalagem) spnEmbalagem.getSelectedItem() : null);
                                         aux1.setTipoPeixe((TipoPeixe) spnTipoPeixe.getSelectedItem());
                                         aux1.setTamanhoPeixe(spnTamanho.getSelectedItem() != null ? (TamanhoPeixe) spnTamanho.getSelectedItem() : null);
                                         aux1.setPeixe(SessionApp.getPeixe());
+                                        aux1.setDestino((String) spnDestino.getSelectedItem());
                                         aux1.setPesoEmbalagem(edtPesoEmbalagem.getText() != null && !edtPesoEmbalagem.getText().toString().isEmpty() ? new BigDecimal(edtPesoEmbalagem.getText().toString().replace(",", ".")) : null);
 
                                         break;
@@ -595,14 +619,14 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
                             }
                         }
 
-                        showDialogInformacao("Armazenamento editado com sucesso.");
+                        showDialogInformacao("Retirada editada com sucesso.");
                     } else {
                         showDialogAdvertencia("Preencha todos os campos obrigatórios (*) antes de salvar.");
                     }
                 }
             }
         }catch (Exception e){
-            showDialogAdvertencia("Não foi possivel salvar o armazenamnto.");
+            showDialogAdvertencia("Não foi possivel salvar a retirada.");
         }
     }
 
@@ -620,6 +644,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
         }else{
             if ((edtPeso.getText() != null && !edtPeso.getText().toString().isEmpty())
                     && (edtQtdeEmbalagem.getText() != null && !edtQtdeEmbalagem.getText().toString().isEmpty())
+                    && spnDestino.getSelectedItem() != null
                     && spnTipoPeixe.getSelectedItem() != null) {
                 salvarArmazenamento();
             } else {
@@ -700,7 +725,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
     }
 
     public void showDialogAdvertencia(String msg){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(DadosArmazenamentoActivity.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DadosReriradaActivity.this);
 
         builder.setTitle("Advertência");
 
@@ -719,7 +744,7 @@ public class DadosArmazenamentoActivity extends ActionBarActivity implements Run
     }
 
     public void showDialogInformacao(String msg){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(DadosArmazenamentoActivity.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(DadosReriradaActivity.this);
 
         builder.setTitle("Informação");
 

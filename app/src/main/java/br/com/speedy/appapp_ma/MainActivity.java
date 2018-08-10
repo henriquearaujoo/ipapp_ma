@@ -30,6 +30,7 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import br.com.speedy.appapp_ma.enumerated.Posto;
 import br.com.speedy.appapp_ma.fragment.EntradaFragment;
 import br.com.speedy.appapp_ma.fragment.ResumoFragment;
 import br.com.speedy.appapp_ma.fragment.SaidaFragment;
@@ -82,10 +83,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     private Integer numInconsistencias;
 
+    private String posto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        posto = SharedPreferencesUtil.getPreferences(MainActivity.this, "posto");
 
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
@@ -133,6 +138,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         btEstoque = (Button) findViewById(R.id.btMEstoque);
         btEstoque.setText("  Estoque");
 
+
+        btBuscarDados.setVisibility(View.GONE);
+        btSalvarDados.setVisibility(View.GONE);
+        btEstoque.setVisibility(View.GONE);
+
+
+        btInconsistencias.setVisibility(View.GONE);
+
         btBuscarDados.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,7 +184,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         });
 
         executando = true;
-        iniciarVerificacaoInconsistenmcias();
+        //iniciarVerificacaoInconsistenmcias();
     }
 
     public void iniciarVerificacaoInconsistenmcias(){
@@ -366,7 +379,9 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             public void run() {
                 JSONObject objectEnvio = new JSONObject();
 
+
                 try{
+
                     JSONArray jLista = new JSONArray();
 
                     for (ItemResumo itemResumo : itemResumos){
@@ -391,15 +406,19 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
                             jItemResumo.put("peixe", jPeixe);
 
-                            JSONObject jCamara = new JSONObject();
-                            jCamara.put("id", aux.getCamara().getId());
+                            if (aux.getCamara() != null) {
+                                JSONObject jCamara = new JSONObject();
+                                jCamara.put("id", aux.getCamara().getId());
 
-                            jItemResumo.put("camara", jCamara);
+                                jItemResumo.put("camara", jCamara);
+                            }
 
-                            JSONObject jPosicao = new JSONObject();
-                            jPosicao.put("id", aux.getPosicaoCamara().getId());
+                            if (aux.getPosicaoCamara() != null){
+                                JSONObject jPosicao = new JSONObject();
+                                jPosicao.put("id", aux.getPosicaoCamara().getId());
 
-                            jItemResumo.put("posicaoCamara", jPosicao);
+                                jItemResumo.put("posicaoCamara", jPosicao);
+                            }
 
                             JSONObject jTipoPeixe = new JSONObject();
                             jTipoPeixe.put("id", aux.getTipoPeixe().getId());
@@ -413,16 +432,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
                             jItemResumo.put("tamanhoPeixe", jTamanho);
 
-                            if (itemResumo.getTipo().equals("Armazenar")){
+                            JSONObject jEmbalagem = new JSONObject();
 
-                                JSONObject jEmbalagem = new JSONObject();
+                            if (aux.getEmbalagem() != null)
+                                jEmbalagem.put("id", aux.getEmbalagem().getId());
 
-                                if (aux.getEmbalagem() != null)
-                                    jEmbalagem.put("id", aux.getEmbalagem().getId());
+                            jItemResumo.put("embalagem", jEmbalagem);
 
-                                jItemResumo.put("embalagem", jEmbalagem);
-
-                            }else{
+                            if (itemResumo.getTipo().equals("Retirar")){
                                 if (aux.getDestino().equals("Processo"))
                                     jItemResumo.put("destino", "PROCESSO");
                                 else if (aux.getDestino().equals("Descarte"))
@@ -439,6 +456,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     }
 
                     objectEnvio.put("armazenamentosERetiradas", jLista);
+                    objectEnvio.put("posto", SharedPreferencesUtil.getPreferences(MainActivity.this, "posto"));
 
                     String resposta = callServer("post-json", objectEnvio.toString());
 

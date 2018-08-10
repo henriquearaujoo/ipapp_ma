@@ -13,6 +13,7 @@
     <string name="action_save">Salvar</string>
     <string name="action_close">Fechar</string>
     <string name="title_activity_dados_armazenamento">Dados do armazenamento</string>
+    <string name="title_activity_dados_retirada">Dados da retirada</string>
     <string name="title_activity_inconsistencias">Inconsistências</string>
     <string name="title_activity_observacoes">Observações</string>
     <string name="title_activity_estoque">Estoque por câmara</string>

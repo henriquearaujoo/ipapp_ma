@@ -74,8 +74,11 @@ public class ResumoFragment extends Fragment implements Runnable {
 
     private BigDecimal totalRet;
 
+    private String posto;
+
     // TODO: Rename and change types of parameters
     public static ResumoFragment newInstance(int position) {
+
         ResumoFragment fragment = new ResumoFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, position);
@@ -93,6 +96,9 @@ public class ResumoFragment extends Fragment implements Runnable {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        posto = SharedPreferencesUtil.getPreferences(getActivity(), "posto");
+
         view = inflater.inflate(R.layout.fragment_resumo_list, container, false);
 
         eListView = (ExpandableListView) view.findViewById(R.id.eList);
@@ -227,7 +233,7 @@ public class ResumoFragment extends Fragment implements Runnable {
                         txtTotalArmazenar.setText(FormatterUtil.getValorFormatado(totalArm) + " kg");
                         txtTotalRetirar.setText(FormatterUtil.getValorFormatado(totalRet) + " kg");
 
-                        adapter = new ResumoAdapter(getActivity(), itensResumo);
+                        adapter = new ResumoAdapter(getActivity(), itensResumo, posto);
 
                         setListAdapter(adapter);
 

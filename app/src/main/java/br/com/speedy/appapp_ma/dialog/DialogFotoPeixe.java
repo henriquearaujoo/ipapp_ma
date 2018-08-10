@@ -1,5 +1,6 @@
 package br.com.speedy.appapp_ma.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -38,6 +39,7 @@ public class DialogFotoPeixe extends DialogFragment {
 
     }
 
+    @SuppressLint("ValidFragment")
     public DialogFotoPeixe(Peixe peixe){
         this.peixe = peixe;
     }

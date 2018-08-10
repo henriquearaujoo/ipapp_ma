@@ -1,5 +1,6 @@
 package br.com.speedy.appapp_ma.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -52,6 +53,7 @@ public class DialogDadosConfiguracaoSenha extends DialogFragment {
 
     }
 
+    @SuppressLint("ValidFragment")
     public DialogDadosConfiguracaoSenha(Context context){
         this.context = context;
     }
